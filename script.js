@@ -1,11 +1,18 @@
-const convertButton = document.querySelector(".convert-button")
+const convertButton = document.querySelector("#convert-button")
 const currencySelect = document.querySelector(".currency-select")
 
-function convertValues() {
+const convertValues = async ()=> {
     const currencySelectUr = document.querySelector(".currency-select-ur").value; // Moeda de origem
     const inputCurrencyValue = document.querySelector(".input-currency").value; // Pega o valor inserido como string
     const currencyValueToConvert = document.querySelector(".currency-value-to-convert");
     const currencyValueToConverted = document.querySelector(".currency-value");
+
+    const moedas = await fetch("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,BTC-BRL").then( retorno => retorno.json())
+    const dolar = moedas.USDBRL.high
+    const euro = moedas.EURBRL.high
+    const btc = moedas.BTCBRL.high
+    console.log(moedas)
+
 
     // Exibe o valor da moeda de origem formatado
     currencyValueToConvert.innerHTML = new Intl.NumberFormat("pt-BR", {
@@ -14,10 +21,7 @@ function convertValues() {
     }).format(inputCurrencyValue);
 
     // Define as taxas de câmbio
-    const dolarToday = 5.2;
-    const euroToday = 6.2;
-    const libraToday = 6.1;
-    const btcToday = 585693.74;
+
 
     let convertedValue = 0;
 
@@ -45,11 +49,6 @@ function convertValues() {
             style: "currency",
             currency: "EUR"
         }).format(convertedValue / euroToday); // Converte para euro
-    } else if (currencySelect.value === 'libra') {
-        currencyValueToConverted.innerHTML = new Intl.NumberFormat('de-GB', {
-            style: "currency",
-            currency: "GBP"
-        }).format(convertedValue / libraToday); // Converte para libra
     } else if (currencySelect.value === 'btc') {
         currencyValueToConverted.innerHTML = new Intl.NumberFormat('de-US', {
             style: "currency",
