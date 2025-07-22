@@ -1,27 +1,26 @@
-const convertButton = document.querySelector("#convert-button")
-const currencySelect = document.querySelector(".currency-select")
+const convertButton = document.querySelector("#convert-button");
+const currencySelect = document.querySelector(".currency-select");
 
-const convertValues = async ()=> {
+const convertValues = async () => {
     const currencySelectUr = document.querySelector(".currency-select-ur").value; // Moeda de origem
     const inputCurrencyValue = document.querySelector(".input-currency").value; // Pega o valor inserido como string
     const currencyValueToConvert = document.querySelector(".currency-value-to-convert");
     const currencyValueToConverted = document.querySelector(".currency-value");
 
-    const moedas = await fetch("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,BTC-BRL").then( retorno => retorno.json())
-    const dolar = moedas.USDBRL.high
-    const euro = moedas.EURBRL.high
-    const btc = moedas.BTCBRL.high
-    console.log(moedas)
-
+    // Pega as taxas de câmbio
+    const moedas = await fetch("https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,BTC-BRL")
+        .then(retorno => retorno.json());
+    
+    const dolarToday = moedas.USDBRL.high; // Taxa do dólar
+    const euroToday = moedas.EURBRL.high; // Taxa do euro
+    const libraToday = 7; // Defina uma taxa de exemplo para libra
+    const btcToday = moedas.BTCBRL.high; // Taxa do bitcoin
 
     // Exibe o valor da moeda de origem formatado
     currencyValueToConvert.innerHTML = new Intl.NumberFormat("pt-BR", {
         style: "currency",
         currency: "BRL"
     }).format(inputCurrencyValue);
-
-    // Define as taxas de câmbio
-
 
     let convertedValue = 0;
 
@@ -49,6 +48,11 @@ const convertValues = async ()=> {
             style: "currency",
             currency: "EUR"
         }).format(convertedValue / euroToday); // Converte para euro
+    } else if (currencySelect.value === 'libra') {
+        currencyValueToConverted.innerHTML = new Intl.NumberFormat('de-GB', {
+            style: "currency",
+            currency: "GBP"
+        }).format(convertedValue / libraToday); // Converte para libra
     } else if (currencySelect.value === 'btc') {
         currencyValueToConverted.innerHTML = new Intl.NumberFormat('de-US', {
             style: "currency",
@@ -59,32 +63,26 @@ const convertValues = async ()=> {
     }
 }
 
+function changeCurrency() {
+    const currencyName = document.getElementById('currency-name');
+    const currencyImage = document.querySelector('.currency-img');
 
-function changeCurrency(){
-const currencyName = document.getElementById('currency-name')
-const currencyImage = document.querySelector('.currency-img')
-
-if(currencySelect.value == 'dolar') {
-    currencyName.innerHTML = 'dolar americano'
-    currencyImage.src = './assets/eua.png'
+    if (currencySelect.value == 'dolar') {
+        currencyName.innerHTML = 'dólar americano';
+        currencyImage.src = './assets/eua.png';
+    } else if (currencySelect.value == 'euro') {
+        currencyName.innerHTML = 'Euro';
+        currencyImage.src = './assets/euro.png';
+    } else if (currencySelect.value == 'libra') {
+        currencyName.innerHTML = 'Libra';
+        currencyImage.src = './assets/libra 1.png';
+    } else if (currencySelect.value == 'btc') {
+        currencyName.innerHTML = 'BTC';
+        currencyImage.src = './assets/bitcoin 1.png';
+    }
+    convertValues();
 }
 
-if(currencySelect.value == 'euro') {
-    currencyName.innerHTML = 'Euro'
-    currencyImage.src = './assets/euro.png'
-}
-
-if(currencySelect.value == 'libra') {
-    currencyName.innerHTML = 'Libra'
-    currencyImage.src = './assets/libra 1.png'
-}
-
-if(currencySelect.value == 'btc') {
-    currencyName.innerHTML = 'BTC'
-    currencyImage.src = './assets/bitcoin 1.png'
-}
-convertValues()
-}
-
-currencySelect.addEventListener("change", changeCurrency)
-convertButton.addEventListener("click", convertValues)
+// Adiciona os ouvintes de evento
+currencySelect.addEventListener("change", changeCurrency);
+convertButton.addEventListener("click", convertValues);
